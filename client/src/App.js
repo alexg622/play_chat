@@ -3,6 +3,7 @@ import { Provider } from 'react-redux'
 import store from './store/store'
 import { BrowserRouter as Router, Route} from 'react-router-dom'
 import Home from './components/Home'
+import Navbar from './components/Navbar'
 import './App.css';
 
 // store.dispatch(setCurrentUser(decoded))
@@ -14,6 +15,7 @@ class App extends Component {
       <Provider store={ store }>
         <Router>
           <div className="App">
+            <Navbar />
             <Route exact path="/" component={ Home }/>
           </div>
         </Router>
