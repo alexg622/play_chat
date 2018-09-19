@@ -14,7 +14,7 @@ const UserSchema = new Schema({
   },
   loggedIn: {
     type: String,
-    default: "false"
+    default: "False"
   }
 })
 

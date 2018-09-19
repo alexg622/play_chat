@@ -4,8 +4,11 @@ const bodyParser = require("body-parser")
 const mongoose = require("mongoose")
 const db = require('./.git/keys.js').mongoURI
 const users = require("./routes/api/users")
+const cors = require('cors')
 
 mongoose.connect(db).then(() => console.log(`MongoDB is connected`))
+
+app.use(cors())
 
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
