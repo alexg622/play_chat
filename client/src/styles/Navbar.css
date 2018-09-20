@@ -32,7 +32,7 @@
   transition: all 1s;
   cursor: pointer;
   height: 100%;
-  width: 100%; 
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -52,7 +52,7 @@
 
 .logout {
   color: white;
-  border-left: 1px solid #cfcfcf;
+  /* border-left: 1px solid #cfcfcf; */
   transition: all 1s;
   cursor: pointer;
   height: 100%;

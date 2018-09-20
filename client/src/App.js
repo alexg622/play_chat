@@ -3,10 +3,14 @@ import { Provider } from 'react-redux'
 import store from './store/store'
 import { BrowserRouter as Router, Route} from 'react-router-dom'
 import Home from './components/Home'
+import Modal from './components/modal'
+import { setCurrentUser } from './actions/userActions'
 import Navbar from './components/Navbar'
 import './App.css';
 
-// store.dispatch(setCurrentUser(decoded))
+if(localStorage.signedIn === "True") {
+  store.dispatch(setCurrentUser({username: localStorage.username, id: localStorage.userId}))
+} 
 
 class App extends Component {
   render() {
@@ -15,6 +19,7 @@ class App extends Component {
       <Provider store={ store }>
         <Router>
           <div className="App">
+            <Modal />
             <Navbar />
             <Route exact path="/" component={ Home }/>
           </div>

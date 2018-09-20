@@ -1,0 +1,70 @@
+.form-container {
+  height: 500px;
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+  /* border: 1px solid white; */
+  justify-content: space-around;
+  align-items: center;
+  background: black;
+  border-radius: 5px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  height: 80%;
+  background: black;
+  width: 450px;
+}
+
+.inputs {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  height: 35%;
+}
+
+.form-title {
+  font-size: 25px;
+  color: white;
+}
+
+.input-username{
+  width: 350px;
+  height: 30px;
+  background: white;
+  font-size: 15px;
+  text-indent: 5px;
+}
+
+.input-password{
+  width: 350px;
+  height: 30px;
+  background: white;
+  font-size: 15px;
+  text-indent: 5px;
+}
+
+.input-password:hover{
+  cursor: pointer;
+}
+
+.input-submit {
+  width: 175px;
+  height: 30px;
+  background: black;
+  color: white;
+  font-size: 15px;
+  text-align: center;
+  transition: 1s;
+  
+}
+
+.input-submit:hover{
+  cursor: pointer;
+  color: #cfcfcf
+}
