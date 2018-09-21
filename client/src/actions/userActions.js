@@ -32,6 +32,7 @@ export const signupUser = data => dispatch => (
     localStorage.signedIn = "True"
     localStorage.userId = String(res.data._id)
     localStorage.username = res.data.username
+    localStorage.conversations = JSON.stringify(res.data.conversations)
     return dispatch({
       type: SET_CURRENT_USER,
       payload: {username: res.data.username, id: String(res.data._id)}
@@ -49,9 +50,11 @@ export const loginUser = data => dispatch => (
     data
   )
   .then(res => {
+    console.log(res.data);
     localStorage.signedIn = "True"
     localStorage.userId = String(res.data._id)
     localStorage.username = res.data.username
+    localStorage.conversations = JSON.Stringify(res.data.conversations)
     return dispatch({
       type: SET_CURRENT_USER,
       payload: {username: res.data.username, id: String(res.data._id)}
@@ -77,6 +80,7 @@ export const logoutUser = () => dispatch => {
     localStorage.signedIn = "False"
     localStorage.username = ""
     localStorage.userId = ""
+    localStorage.conversations = ""
     axios.get(`http://localhost:5000/api/users`)
       .then(res => {
         dispatch({

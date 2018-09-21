@@ -1,5 +1,7 @@
 const express = require('express')
 const router = express.Router()
+const Conversation = require("../../models/Conversation")
+const Message = require("../../models/Message")
 const User = require("../../models/User")
 
 router.get("/users/test", (req, res) => res.json({msg: "Working"}))
@@ -10,7 +12,7 @@ router.get('/users', (req, res) => {
   User.find()
     .then(users => {
       users.map(user => {
-        userObject[user.username] = {loggedIn: user.loggedIn, id: user.id}
+        userObject[user.username] = {loggedIn: user.loggedIn, id: user.id, conversations: user.conversations}
       })
       res.json(userObject)
     })
@@ -20,7 +22,7 @@ router.get('/users', (req, res) => {
 router.get('/users/:userId', (req, res) => {
   User.findById(req.params.userId)
     .then(user => {
-      res.json({username: user.username, id: user.id, loggedIn: user.loggedIn})
+      res.json({username: user.username, id: user.id, loggedIn: user.loggedIn, conversations: user.conversations})
     })
     .catch(err => res.json(err))
 })
@@ -57,6 +59,61 @@ router.delete('/users/logout/:userId', (req, res) => {
     })
     .catch(err => {
       res.json(err)
+    })
+})
+
+router.get('/users/:userId/conversations/:converserName', (req, res) => {
+  let counter = false
+  let theConvo
+  User.findOne({username: req.params.converserName})
+    .then(userTwo => {
+      User.findById(req.params.userId)
+        .then(userOne => {
+          userOne.conversations.map(convo => {
+            console.log(String(convo.userConverser) === String(userTwo.id))
+            if (String(convo.userConverser) === String(userTwo.id)) {
+              counter = true
+              theConvo = convo
+             }
+          })
+          console.log("here");
+          if(counter) {
+            console.log("In true");
+            return res.json(theConvo)
+          } else {
+            console.log("in false");
+            const newConversation = new Conversation({
+              userTwo: userTwo,
+              userOne: userOne
+            })
+            newConversation.save()
+            .then(conversation => {
+              userOne.conversations.unshift({conversation: conversation, userConverser: userTwo})
+              userOne.save()
+              userTwo.conversations.unshift({conversation: conversation, userConverser: userOne})
+              userTwo.save()
+              return res.json(conversation)
+            })
+          }
+        })
+    })
+})
+
+router.post("/users/:userId/conversations/:conversationId/messages", (req, res) => {
+  Conversation.findById(req.params.conversationId)
+    .then(conversation => {
+      User.findById(req.params.userId)
+        .then(user => {
+          const newMessage = new Message({
+            text: req.body.text,
+            user: user
+          })
+          newMessage.save()
+            .then(message => {
+              conversation.messages.unshift(message)
+              conversation.save().then(response => res.json(response))
+            })
+        })
     })
 })
 

@@ -9,7 +9,10 @@ import Navbar from './components/Navbar'
 import './App.css';
 
 if(localStorage.signedIn === "True") {
-  store.dispatch(setCurrentUser({username: localStorage.username, id: localStorage.userId}))
+  store.dispatch(setCurrentUser({
+    username: localStorage.username,
+    id: localStorage.userId,
+    conversations: JSON.parse(localStorage.conversations)}))
 }
 
 class App extends Component {

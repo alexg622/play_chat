@@ -15,7 +15,19 @@ const UserSchema = new Schema({
   loggedIn: {
     type: String,
     default: "True"
-  }
+  },
+  conversations: [
+    {
+      conversation: {
+        type: Schema.Types.ObjectId,
+        refs: "Conversation"
+      },
+      userConverser: {
+        type: Schema.Types.ObjectId,
+        refs: "User"
+      },
+    },
+  ],
 })
 
 module.exports = User = mongoose.model("User", UserSchema)
