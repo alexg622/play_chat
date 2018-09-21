@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import '../styles/form.css'
 import { closeModal } from '../actions/modalActions'
-import { loginUser } from '../actions/userActions'
+import { loginUser, getAllUsers } from '../actions/userActions'
 
 class Login extends Component {
   constructor(){
@@ -20,7 +20,10 @@ class Login extends Component {
   handleSubmit(e){
     e.preventDefault()
     const user = { username: this.state.username, password: this.state.password }
-    this.props.loginUser(user).then(res => this.props.closeModal())
+    this.props.loginUser(user).then(res => {
+      this.props.getAllUsers()
+      this.props.closeModal()
+    })
   }
 
   render(){
@@ -39,4 +42,4 @@ class Login extends Component {
   }
 }
 
-export default connect(null, { closeModal, loginUser })(Login)
+export default connect(null, { closeModal, loginUser, getAllUsers })(Login)

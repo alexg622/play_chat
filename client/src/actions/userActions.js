@@ -10,10 +10,12 @@ import axios from 'axios'
 
 export const getAllUsers = () => dispatch => (
   axios.get(`http://localhost:5000/api/users`)
-    .then(res => dispatch({
+    .then(res => {
+      dispatch({
       type: GET_ALL_USERS,
       payload: res.data
-    }))
+    })
+  })
     .catch(err => dispatch({
       type: ERROR,
       payload: {msg: "No users to get"}
@@ -69,10 +71,24 @@ export const setCurrentUser = user => dispatch => (
 )
 
 export const logoutUser = () => dispatch => {
-  localStorage.signedIn = "False"
-  localStorage.username = ""
-  localStorage.userId = ""
-  dispatch({
-    type: LOGOUT_USER
+  axios.delete(`http://localhost:5000/api/users/logout/${localStorage.userId}`,
+    {params: {userId: localStorage.userId}}
+  ).then(res => {
+    localStorage.signedIn = "False"
+    localStorage.username = ""
+    localStorage.userId = ""
+    axios.get(`http://localhost:5000/api/users`)
+      .then(res => {
+        dispatch({
+          type: LOGOUT_USER,
+          payload: res.data
+        })
+      })
+  })
+  .catch(err => {
+    dispatch({
+      type: ERROR,
+      payload: {msg: "Could not find user"}
+    })
   })
 }

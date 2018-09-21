@@ -1,15 +1,28 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { openModal } from '../actions/modalActions'
-import { logoutUser } from '../actions/userActions'
+import { withRouter } from 'react-router-dom'
+import { logoutUser, getAllUsers } from '../actions/userActions'
 import '../styles/Navbar.css'
 
 class Navbar extends Component {
 
+  logoutPromise(){
+    return new Promise((resolve, reject) => {
+      return resolve(this.props.logoutUser())
+    })
+  }
+
+  logout(){
+    this.logoutPromise().then(res => {
+      this.props.getAllUsers().then(() => this.props.history.push('/'))
+    })
+  }
+
   showAuthLinks(){
     if(this.props.currentUser) {
       return(
-        <div className="logout"><div onClick={this.props.logoutUser.bind(this)}className="navbar-text">Logout</div></div>
+        <div className="logout"><div onClick={this.logout.bind(this)}className="navbar-text">Logout</div></div>
       )
     } else {
       return (
@@ -40,4 +53,4 @@ const mapStateToProps = state => ({
 })
 
 
-export default connect(mapStateToProps, { openModal, logoutUser })(Navbar)
+export default withRouter(connect(mapStateToProps, { openModal, logoutUser, getAllUsers })(Navbar))

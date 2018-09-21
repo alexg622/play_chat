@@ -32,7 +32,8 @@ const usersReducer = (state = initialState, action) => {
     case LOGOUT_USER:
       return {
         ...state,
-        currentUser: null
+        currentUser: null,
+        users: action.payload
       }
     default:
       return state

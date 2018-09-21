@@ -49,8 +49,8 @@ router.post('/users/login', (req, res) => {
     .catch(err => res.json(err))
 })
 
-router.delete('/users/logout', (req, res) => {
-  User.findById(req.body.userId)
+router.delete('/users/logout/:userId', (req, res) => {
+  User.findById(req.params.userId)
     .then(user => {
       user.loggedIn = "False"
       user.save().then(user => res.json(user))

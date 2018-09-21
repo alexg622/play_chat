@@ -10,7 +10,7 @@ import './App.css';
 
 if(localStorage.signedIn === "True") {
   store.dispatch(setCurrentUser({username: localStorage.username, id: localStorage.userId}))
-} 
+}
 
 class App extends Component {
   render() {
