@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { signupUser, getAllUsers } from '../actions/userActions'
+import { signupUser, clearErrors, getAllUsers } from '../actions/userActions'
 import { closeModal } from '../actions/modalActions'
 import '../styles/form.css'
 
@@ -13,6 +13,10 @@ class Signup extends Component {
     }
   }
 
+  componentDidMount(){
+    this.props.clearErrors()
+  }
+
   update(value) {
     return e => this.setState({[value]: e.target.value})
   }
@@ -21,8 +25,12 @@ class Signup extends Component {
     e.preventDefault()
     const newUser = { username: this.state.username, password: this.state.password }
     this.props.signupUser(newUser).then(res => {
-      this.props.getAllUsers()
-      this.props.closeModal()
+      if (this.props.error) {
+        return
+      } else {
+        this.props.getAllUsers()
+        this.props.closeModal()
+      }
     })
   }
 
@@ -30,7 +38,10 @@ class Signup extends Component {
     return(
       <div className="form-container">
         <form className="form"onSubmit={this.handleSubmit.bind(this)}>
-          <div className="form-title">Signup</div>
+          <div className="form-title">
+            <div>Signup</div>
+            {this.props.error ? <div className="errors">{this.props.error.err}</div> : null}
+          </div>
           <div className="inputs">
             <input className="input-username" onChange={this.update("username")} type="text" value={this.state.username} placeholder="username"/>
             <input className="input-password" onChange={this.update("password")} type="password" placeholder="Password" value={this.state.password} />
@@ -42,4 +53,8 @@ class Signup extends Component {
   }
 }
 
-export default connect(null, { closeModal, signupUser, getAllUsers })(Signup)
+const mapStateToProps = state => {
+  return{error: state.users.error}
+}
+
+export default connect(mapStateToProps, { closeModal, clearErrors, signupUser, getAllUsers })(Signup)

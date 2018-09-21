@@ -3,6 +3,7 @@ import {
   LOGOUT_USER,
   LOGIN_USER,
   GET_ALL_USERS,
+  CLEAR_ERRORS,
   ERROR,
   SET_CURRENT_USER,
   GET_USER} from '../types/types'
@@ -38,7 +39,7 @@ export const signupUser = data => dispatch => (
   })
   .catch(err => dispatch({
     type: ERROR,
-    paload: {err: "Please enter a valid username and password"}
+    payload: {err: "Please enter a valid username and password"}
   }))
 )
 
@@ -56,11 +57,10 @@ export const loginUser = data => dispatch => (
       payload: {username: res.data.username, id: String(res.data._id)}
     })
   })
-  .catch(err => {
-    dispatch({
+  .catch(err => dispatch({
     type: ERROR,
-    paload: {err: "Please enter a valid username and password"}
-  })})
+    payload: {err: "Please enter a valid username and password"}
+  }))
 )
 
 export const setCurrentUser = user => dispatch => (
@@ -90,5 +90,11 @@ export const logoutUser = () => dispatch => {
       type: ERROR,
       payload: {msg: "Could not find user"}
     })
+  })
+}
+
+export const clearErrors = () => dispatch => {
+  return dispatch({
+    type: CLEAR_ERRORS
   })
 }

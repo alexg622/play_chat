@@ -1,6 +1,7 @@
 import {
   GET_ALL_USERS,
   SET_CURRENT_USER,
+  CLEAR_ERRORS,
   LOGOUT_USER,
   ERROR
 } from '../types/types'
@@ -9,7 +10,7 @@ const initialState = {
   user: {},
   users: [],
   currentUser: null,
-  error: {}
+  error: null
 }
 
 const usersReducer = (state = initialState, action) => {
@@ -34,6 +35,11 @@ const usersReducer = (state = initialState, action) => {
         ...state,
         currentUser: null,
         users: action.payload
+      }
+    case CLEAR_ERRORS:
+      return {
+        ...state,
+        error: null
       }
     default:
       return state

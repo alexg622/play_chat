@@ -26,13 +26,11 @@ router.get('/users/:userId', (req, res) => {
 })
 
 router.post('/users/signup', (req, res) => {
-
   const newUser = new User({
     username: req.body.username,
     password: req.body.password
   })
-
-  newUser.save().then(user => res.json(user)).catch(err => res.json(err))
+  newUser.save().then(user => res.json(user)).catch(() => res.status(404).json({err: "Please enter a valid user name and password with a length of at least one."}))
 })
 
 router.post('/users/login', (req, res) => {
@@ -43,10 +41,12 @@ router.post('/users/login', (req, res) => {
         user.save()
         return res.json(user)
       } else {
-        return res.json({err: "Wrong username or password"})
+        return res.status(404).json({err: "Wrong username or password"})
       }
     })
-    .catch(err => res.json(err))
+    .catch(err => {
+      res.status(404).json(err)
+    })
 })
 
 router.delete('/users/logout/:userId', (req, res) => {
