@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import { getAllUsers, getConvoMessages, makeMessage, makeConversation } from '../actions/userActions'
 import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
+import io from 'socket.io-client'
 import '../styles/home.css'
+
+const socketUrl = "http://192.168.1.2:5000"
 
 class Home extends Component {
   constructor(){
@@ -10,6 +13,7 @@ class Home extends Component {
     this.state = {
       text: "",
       converser: "",
+      socket: null
     }
     this.makeConversation = this.makeConversation.bind(this)
     this.handleUser = this.handleUser.bind(this)
@@ -17,6 +21,19 @@ class Home extends Component {
   }
   componentDidMount(){
     this.props.getAllUsers()
+  }
+
+  componentWillMount(){
+    this.initSocket()
+  }
+
+  initSocket(){
+    const socket = io(socketUrl)
+
+    socket.on('connect', () => {
+      console.log(`connected to socket: ${socket.id}`);
+    })
+    this.setState({socket})
   }
 
   update(field){

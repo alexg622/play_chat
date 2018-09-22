@@ -1,14 +1,14 @@
 import {
-  SIGNUP_USER,
+  // SIGNUP_USER,
   LOGOUT_USER,
-  LOGIN_USER,
+  // LOGIN_USER,
   GET_ALL_USERS,
   CLEAR_ERRORS,
   ERROR,
   SET_CURRENT_USER,
   MAKE_CONVERSATION,
   GET_CONVO_MESSAGES,
-  GET_USER} from '../types/types'
+  } from '../types/types'
 import axios from 'axios'
 
 export const getAllUsers = () => dispatch => (
