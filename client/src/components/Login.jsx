@@ -3,14 +3,31 @@ import { connect } from 'react-redux'
 import '../styles/form.css'
 import { closeModal } from '../actions/modalActions'
 import { loginUser, clearErrors, getAllUsers } from '../actions/userActions'
+import io from 'socket.io-client'
+const socketUrl = "http://192.168.1.2:5000"
 
 class Login extends Component {
   constructor(){
     super()
     this.state = {
       username: "",
-      password: ""
+      password: "",
+      socket: null
     }
+  }
+
+  componentWillMount(){
+    this.initSocket()
+  }
+
+  initSocket(){
+    const socket = io(socketUrl)
+
+    socket.on('connect', () => {
+      console.log("in logged in socket");
+      console.log(`connected to socket: ${socket.id}`);
+    })
+    this.setState({socket})
   }
 
   componentDidMount(){
@@ -29,6 +46,7 @@ class Login extends Component {
         return
       } else {
         this.props.getAllUsers()
+        this.state.socket.emit("I_LOGGED_IN", this.state.username)
         this.props.closeModal()
       }
     })

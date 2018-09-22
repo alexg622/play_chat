@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { getAllUsers, getConvoMessages, makeMessage, makeConversation } from '../actions/userActions'
 import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
-import io from 'socket.io-client'
 import '../styles/home.css'
+import io from 'socket.io-client'
 
 const socketUrl = "http://192.168.1.2:5000"
 
@@ -21,6 +21,7 @@ class Home extends Component {
   }
   componentDidMount(){
     this.props.getAllUsers()
+    this.initSocket()
   }
 
   componentWillMount(){
@@ -29,13 +30,25 @@ class Home extends Component {
 
   initSocket(){
     const socket = io(socketUrl)
-    console.log(`RECEIVE_MESSAGE_${localStorage.username}`);
+
     socket.on(`RECEIVE_MESSAGE_${localStorage.username}`, (username) => {
-      console.log("in receive message");
-      console.log(localStorage.userId);
-      console.log(username);
       this.makeConversation(localStorage.userId, username)
     })
+
+    socket.on("USER_LOGGED_IN", (username) => {
+      console.log("in user logged in");
+      this.props.getAllUsers().then(res => {
+        return
+      })
+    })
+
+
+    socket.on("USER_LOGGED_OUT", (username) => {
+      this.props.getAllUsers().then(res => {
+        return
+      })
+    })
+
     socket.on('connect', () => {
       console.log(`connected to socket: ${socket.id}`);
     })

@@ -4,8 +4,30 @@ import { openModal } from '../actions/modalActions'
 import { withRouter } from 'react-router-dom'
 import { logoutUser, getAllUsers } from '../actions/userActions'
 import '../styles/Navbar.css'
+import io from 'socket.io-client'
+
+const socketUrl = "http://192.168.1.2:5000"
 
 class Navbar extends Component {
+  constructor(props){
+    super(props)
+    this.state = {
+      socket: null
+    }
+  }
+
+  componentWillMount(){
+    this.initSocket()
+  }
+
+  initSocket(){
+    const socket = io(socketUrl)
+
+    socket.on('connect', () => {
+      console.log(`connected to socket: ${socket.id}`);
+    })
+    this.setState({socket})
+  }
 
   logoutPromise(){
     return new Promise((resolve, reject) => {
@@ -15,6 +37,7 @@ class Navbar extends Component {
 
   logout(){
     this.logoutPromise().then(res => {
+      this.state.socket.emit("I_LOGGED_OUT", localStorage.username)
       this.props.getAllUsers().then(() => this.props.history.push('/'))
     })
   }
