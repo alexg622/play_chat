@@ -29,7 +29,13 @@ class Home extends Component {
 
   initSocket(){
     const socket = io(socketUrl)
-
+    console.log(`RECEIVE_MESSAGE_${localStorage.username}`);
+    socket.on(`RECEIVE_MESSAGE_${localStorage.username}`, (username) => {
+      console.log("in receive message");
+      console.log(localStorage.userId);
+      console.log(username);
+      this.makeConversation(localStorage.userId, username)
+    })
     socket.on('connect', () => {
       console.log(`connected to socket: ${socket.id}`);
     })
@@ -98,6 +104,7 @@ class Home extends Component {
     this.props.makeMessage(this.state.text, localStorage.userId, this.props.currentConvo.conversation)
       .then(res => {
         this.props.getConvoMessages(res.data._id)
+        this.state.socket.emit(`SEND_MESSAGE`, this.state.converser, localStorage.username)
         this.setState({text: ""})
       })
   }
@@ -105,7 +112,6 @@ class Home extends Component {
   showConvoMessages(){
     let result
     if(this.props.convoMessages && this.props.convoMessages.length > 0) {
-      console.log("in map");
       result = this.props.convoMessages.map((message, idx) => {
         return (
           <div key={`${idx}`} className="home-actual-text">{message.text}</div>

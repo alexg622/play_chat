@@ -39,7 +39,6 @@ router.post('/users/login', (req, res) => {
   User.findOne({username: req.body.username})
     .then(user => {
       if(user.password === req.body.password) {
-        console.log("here");
         user.loggedIn = "True"
         user.save()
         return res.json(user)
@@ -70,7 +69,6 @@ router.get('/users/:userId/conversations/:converserName', (req, res) => {
     .then(userTwo => {
       User.findById(req.params.userId)
         .then(userOne => {
-          console.log(userOne);
           userOne.conversations.map(convo => {
             if (String(convo.userConverser) === String(userTwo.id)) {
               counter = true

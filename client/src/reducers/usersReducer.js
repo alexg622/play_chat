@@ -25,13 +25,11 @@ const usersReducer = (state = initialState, action) => {
         users: action.payload
       }
     case ERROR:
-    console.log("in error");
       return {
         ...state,
         error: action.payload
       }
     case SET_CURRENT_USER:
-      console.log("settinguser");
       return {
         ...state,
         currentUser: action.payload
@@ -53,7 +51,6 @@ const usersReducer = (state = initialState, action) => {
         currentConvo: action.payload
       }
     case GET_CONVO_MESSAGES:
-      console.log("in convo message");
       return {
         ...state,
         convoMessages: action.payload
