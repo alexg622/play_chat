@@ -39,6 +39,7 @@ router.post('/users/login', (req, res) => {
   User.findOne({username: req.body.username})
     .then(user => {
       if(user.password === req.body.password) {
+        console.log("here");
         user.loggedIn = "True"
         user.save()
         return res.json(user)
@@ -69,19 +70,16 @@ router.get('/users/:userId/conversations/:converserName', (req, res) => {
     .then(userTwo => {
       User.findById(req.params.userId)
         .then(userOne => {
+          console.log(userOne);
           userOne.conversations.map(convo => {
-            console.log(String(convo.userConverser) === String(userTwo.id))
             if (String(convo.userConverser) === String(userTwo.id)) {
               counter = true
               theConvo = convo
              }
           })
-          console.log("here");
           if(counter) {
-            console.log("In true");
             return res.json(theConvo)
           } else {
-            console.log("in false");
             const newConversation = new Conversation({
               userTwo: userTwo,
               userOne: userOne
@@ -111,9 +109,23 @@ router.post("/users/:userId/conversations/:conversationId/messages", (req, res) 
           newMessage.save()
             .then(message => {
               conversation.messages.unshift(message)
+              conversation.numberOfMessages = String(conversation.messages.length)
               conversation.save().then(response => res.json(response))
             })
         })
+    })
+})
+
+
+
+router.get('/conversations/:conversationId/messages', (req, res) => {
+  Conversation.findById(req.params.conversationId)
+    .then(conversation => {
+      let promises = conversation.messages.map(message => {
+        return Message.findById(message._id)
+        .then(msg => msg)
+      })
+      Promise.all(promises).then(result => res.json({messages: result}))
     })
 })
 

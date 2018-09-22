@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getAllUsers } from '../actions/userActions'
+import { getAllUsers, getConvoMessages, makeMessage, makeConversation } from '../actions/userActions'
 import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import '../styles/home.css'
@@ -8,8 +8,12 @@ class Home extends Component {
   constructor(){
     super()
     this.state = {
-      text: ""
+      text: "",
+      converser: "",
     }
+    this.makeConversation = this.makeConversation.bind(this)
+    this.handleUser = this.handleUser.bind(this)
+    this.submitMessage = this.submitMessage.bind(this)
   }
   componentDidMount(){
     this.props.getAllUsers()
@@ -20,9 +24,12 @@ class Home extends Component {
   }
 
   handleUser(e){
+    this.setState({text: ""})
     if(localStorage.signedIn === "True"){
       window.target = e.target
       document.querySelector('.message-input').placeholder = `Message @${e.target.innerText}`
+      this.setState({converser: e.target.innerText})
+      this.makeConversation(localStorage.userId, e.target.innerText)
     } else {
       let div = document.querySelector('.signin-make-chat')
       div.classList.remove("signin-to-chat")
@@ -30,6 +37,11 @@ class Home extends Component {
         div.classList.add("signin-to-chat")
       }, 5000)
     }
+  }
+
+  makeConversation(userId, username){
+    this.props.makeConversation(userId, username)
+      .then(res => this.props.getConvoMessages(this.props.currentConvo.conversation))
   }
 
   showAllUsers(){
@@ -64,15 +76,41 @@ class Home extends Component {
     return output
   }
 
+  submitMessage(e){
+    e.preventDefault()
+    this.props.makeMessage(this.state.text, localStorage.userId, this.props.currentConvo.conversation)
+      .then(res => {
+        this.props.getConvoMessages(res.data._id)
+        this.setState({text: ""})
+      })
+  }
+
+  showConvoMessages(){
+    let result
+    if(this.props.convoMessages && this.props.convoMessages.length > 0) {
+      console.log("in map");
+      result = this.props.convoMessages.map((message, idx) => {
+        return (
+          <div key={`${idx}`} className="home-actual-text">{message.text}</div>
+        )
+      })
+    }
+    return result
+  }
+
+
+
   render(){
+    this.showConvoMessages()
     return(
       <div className="home-container">
         <div  className="home-left-container">{this.showAllUsers()}</div>
         <div className="home-right-container">
           <div className="chat-container">
+            {this.showConvoMessages()}
             <div className="getit signin-make-chat signin-to-chat">Signin to chat</div>
           </div>
-          <form className="message-form">
+          <form onSubmit={this.submitMessage} className="message-form">
             <input className="message-input"type="text" value={this.state.text} placeholder="@Message" onChange={this.update("text")}/>
           </form>
         </div>
@@ -84,9 +122,11 @@ class Home extends Component {
 const mapStateToProps = state => ({
   users: state.users.users,
   user: state.users.user,
-  error: state.users.error
+  error: state.users.error,
+  currentConvo: state.users.currentConvo,
+  convoMessages: state.users.convoMessages
 })
 
 
 
-export default withRouter(connect(mapStateToProps, { getAllUsers })(Home))
+export default withRouter(connect(mapStateToProps, { getAllUsers, makeMessage, getConvoMessages, makeConversation })(Home))

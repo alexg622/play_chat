@@ -6,6 +6,8 @@ import {
   CLEAR_ERRORS,
   ERROR,
   SET_CURRENT_USER,
+  MAKE_CONVERSATION,
+  GET_CONVO_MESSAGES,
   GET_USER} from '../types/types'
 import axios from 'axios'
 
@@ -35,7 +37,7 @@ export const signupUser = data => dispatch => (
     localStorage.conversations = JSON.stringify(res.data.conversations)
     return dispatch({
       type: SET_CURRENT_USER,
-      payload: {username: res.data.username, id: String(res.data._id)}
+      payload: {username: res.data.username, id: String(res.data._id), conversations: res.data.conversations}
     })
   })
   .catch(err => dispatch({
@@ -50,14 +52,13 @@ export const loginUser = data => dispatch => (
     data
   )
   .then(res => {
-    console.log(res.data);
     localStorage.signedIn = "True"
     localStorage.userId = String(res.data._id)
     localStorage.username = res.data.username
-    localStorage.conversations = JSON.Stringify(res.data.conversations)
+    localStorage.conversations = JSON.stringify(res.data.conversations)
     return dispatch({
       type: SET_CURRENT_USER,
-      payload: {username: res.data.username, id: String(res.data._id)}
+      payload: {username: res.data.username, conversations: res.data.conversations, id: String(res.data._id)}
     })
   })
   .catch(err => dispatch({
@@ -102,3 +103,27 @@ export const clearErrors = () => dispatch => {
     type: CLEAR_ERRORS
   })
 }
+
+export const makeConversation = (userId, username) => dispatch => (
+  axios.get(`http://localhost:5000/api/users/${userId}/conversations/${username}`)
+    .then(res => {
+      dispatch({
+        type: MAKE_CONVERSATION,
+        payload: res.data
+      })
+    })
+)
+
+export const makeMessage = (text, userId, conversationId) => dispatch => (
+  axios.post(`http://localhost:5000/api/users/${userId}/conversations/${conversationId}/messages`, { text })
+)
+
+export const getConvoMessages = (conversationId) => dispatch => (
+  axios.get(`http://localhost:5000/api/conversations/${conversationId}/messages`)
+    .then(convoMessages => {
+      return dispatch({
+      type: GET_CONVO_MESSAGES,
+      payload: convoMessages.data.messages
+    })
+  })
+)

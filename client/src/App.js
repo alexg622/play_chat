@@ -8,11 +8,14 @@ import { setCurrentUser } from './actions/userActions'
 import Navbar from './components/Navbar'
 import './App.css';
 
+
 if(localStorage.signedIn === "True") {
+  localStorage.conversations = JSON.stringify({})
   store.dispatch(setCurrentUser({
     username: localStorage.username,
     id: localStorage.userId,
-    conversations: JSON.parse(localStorage.conversations)}))
+    conversations: JSON.parse(localStorage.conversations)
+  }))
 }
 
 class App extends Component {

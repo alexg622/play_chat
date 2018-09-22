@@ -18,6 +18,12 @@ const ConversationSchema = new Schema({
     type: Schema.Types.ObjectId,
     refs: "User"
   },
+  numberOfMessages: {
+    type: String,
+    default: "0"
+  },
 })
+
+
 
 module.exports = Conversation = mongoose.model("Conversation", ConversationSchema)

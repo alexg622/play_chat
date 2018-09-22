@@ -3,14 +3,18 @@ import {
   SET_CURRENT_USER,
   CLEAR_ERRORS,
   LOGOUT_USER,
+  MAKE_CONVERSATION,
+  GET_CONVO_MESSAGES,
   ERROR
 } from '../types/types'
 
 const initialState = {
   user: {},
   users: [],
+  currentConvo: null,
   currentUser: null,
-  error: null
+  error: null,
+  convoMessages: null
 }
 
 const usersReducer = (state = initialState, action) => {
@@ -21,11 +25,13 @@ const usersReducer = (state = initialState, action) => {
         users: action.payload
       }
     case ERROR:
+    console.log("in error");
       return {
         ...state,
         error: action.payload
       }
     case SET_CURRENT_USER:
+      console.log("settinguser");
       return {
         ...state,
         currentUser: action.payload
@@ -40,6 +46,17 @@ const usersReducer = (state = initialState, action) => {
       return {
         ...state,
         error: null
+      }
+    case MAKE_CONVERSATION:
+      return {
+        ...state,
+        currentConvo: action.payload
+      }
+    case GET_CONVO_MESSAGES:
+      console.log("in convo message");
+      return {
+        ...state,
+        convoMessages: action.payload
       }
     default:
       return state
