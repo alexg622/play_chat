@@ -1,7 +1,7 @@
 import {
   // SIGNUP_USER,
   LOGOUT_USER,
-  // LOGIN_USER,
+  LOGIN_USER,
   GET_ALL_USERS,
   CLEAR_ERRORS,
   ERROR,
@@ -35,14 +35,15 @@ export const signupUser = data => dispatch => (
     localStorage.userId = String(res.data._id)
     localStorage.username = res.data.username
     localStorage.conversations = JSON.stringify(res.data.conversations)
+    localStorage.read = res.data.read
     return dispatch({
-      type: SET_CURRENT_USER,
+      type: LOGIN_USER,
       payload: {username: res.data.username, id: String(res.data._id), conversations: res.data.conversations}
     })
   })
   .catch(err => dispatch({
     type: ERROR,
-    payload: {err: "Please enter a valid username and password"}
+    payload: {err: "Please enter a valid username and password that isn't taken"}
   }))
 )
 
@@ -56,9 +57,10 @@ export const loginUser = data => dispatch => (
     localStorage.userId = String(res.data._id)
     localStorage.username = res.data.username
     localStorage.conversations = JSON.stringify(res.data.conversations)
+    localStorage.read = res.data.read
     return dispatch({
-      type: SET_CURRENT_USER,
-      payload: {username: res.data.username, conversations: res.data.conversations, id: String(res.data._id)}
+      type: LOGIN_USER,
+      payload: {username: res.data.username, read: res.data.read, conversations: res.data.conversations, id: String(res.data._id)}
     })
   })
   .catch(err => dispatch({
@@ -82,6 +84,7 @@ export const logoutUser = () => dispatch => {
     localStorage.username = ""
     localStorage.userId = ""
     localStorage.conversations = ""
+    localStorage.read = ""
     axios.get(`http://localhost:5000/api/users`)
       .then(res => {
         dispatch({
@@ -107,7 +110,7 @@ export const clearErrors = () => dispatch => {
 export const makeConversation = (userId, username) => dispatch => (
   axios.get(`http://localhost:5000/api/users/${userId}/conversations/${username}`)
     .then(res => {
-      dispatch({
+      return dispatch({
         type: MAKE_CONVERSATION,
         payload: res.data
       })
@@ -118,12 +121,27 @@ export const makeMessage = (text, userId, conversationId) => dispatch => (
   axios.post(`http://localhost:5000/api/users/${userId}/conversations/${conversationId}/messages`, { text })
 )
 
-export const getConvoMessages = (conversationId) => dispatch => (
-  axios.get(`http://localhost:5000/api/conversations/${conversationId}/messages`)
+export const getConvoMessages = (conversationId, username) => dispatch => (
+  axios.get(`http://localhost:5000/api/users/${username}/conversations/${conversationId}/messages`)
     .then(convoMessages => {
       return dispatch({
       type: GET_CONVO_MESSAGES,
       payload: convoMessages.data.messages
+    })
+  })
+)
+
+export const getCurrentUser = () => dispatch => (
+  axios.get(`http://localhost:5000/api/users/${localStorage.userId}`)
+    .then(res => {
+      localStorage.signedIn = "True"
+      localStorage.userId = localStorage.userId
+      localStorage.username = res.data.username
+      localStorage.conversations = JSON.stringify(res.data.conversations)
+      localStorage.read = res.data.read
+      dispatch({
+      type: SET_CURRENT_USER,
+      payload: {username: localStorage.username, convsersations: res.data.conversations, id: localStorage.userId, read: localStorage.read}
     })
   })
 )

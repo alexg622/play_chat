@@ -7,6 +7,7 @@ import '../styles/Navbar.css'
 import io from 'socket.io-client'
 
 const socketUrl = "http://192.168.1.2:5000"
+// const socketUrl = "http://10.1.10.62:5000"
 
 class Navbar extends Component {
   constructor(props){
@@ -24,7 +25,6 @@ class Navbar extends Component {
     const socket = io(socketUrl)
 
     socket.on('connect', () => {
-      console.log(`connected to socket: ${socket.id}`);
     })
     this.setState({socket})
   }

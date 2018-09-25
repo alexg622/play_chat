@@ -14,7 +14,8 @@ if(localStorage.signedIn === "True") {
   store.dispatch(setCurrentUser({
     username: localStorage.username,
     id: localStorage.userId,
-    conversations: JSON.parse(localStorage.conversations)
+    conversations: JSON.parse(localStorage.conversations),
+    read: localStorage.read
   }))
 }
 

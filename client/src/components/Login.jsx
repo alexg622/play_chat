@@ -5,6 +5,7 @@ import { closeModal } from '../actions/modalActions'
 import { loginUser, clearErrors, getAllUsers } from '../actions/userActions'
 import io from 'socket.io-client'
 const socketUrl = "http://192.168.1.2:5000"
+// const socketUrl = "http://10.1.10.62:5000"
 
 class Login extends Component {
   constructor(){
@@ -24,8 +25,6 @@ class Login extends Component {
     const socket = io(socketUrl)
 
     socket.on('connect', () => {
-      console.log("in logged in socket");
-      console.log(`connected to socket: ${socket.id}`);
     })
     this.setState({socket})
   }
@@ -43,6 +42,9 @@ class Login extends Component {
     const user = { username: this.state.username, password: this.state.password }
     this.props.loginUser(user).then(res => {
       if(this.props.error){
+        setTimeout(() => {
+          this.props.clearErrors()
+        }, 3000)
         return
       } else {
         this.props.getAllUsers()

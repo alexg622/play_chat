@@ -12,7 +12,7 @@ router.get('/users', (req, res) => {
   User.find()
     .then(users => {
       users.map(user => {
-        userObject[user.username] = {loggedIn: user.loggedIn, id: user.id, conversations: user.conversations}
+        userObject[user.username] = {read: user.read, loggedIn: user.loggedIn, id: user.id, conversations: user.conversations}
       })
       res.json(userObject)
     })
@@ -22,15 +22,16 @@ router.get('/users', (req, res) => {
 router.get('/users/:userId', (req, res) => {
   User.findById(req.params.userId)
     .then(user => {
-      res.json({username: user.username, id: user.id, loggedIn: user.loggedIn, conversations: user.conversations})
+      res.json({username: user.username, read: user.read, id: user.id, loggedIn: user.loggedIn, conversations: user.conversations})
     })
     .catch(err => res.json(err))
 })
 
 router.post('/users/signup', (req, res) => {
+  console.log("hwew");
   const newUser = new User({
     username: req.body.username,
-    password: req.body.password
+    password: req.body.password,
   })
   newUser.save().then(user => res.json(user)).catch(() => res.status(404).json({err: "Please enter a valid user name and password with a length of at least one."}))
 })
@@ -63,12 +64,30 @@ router.delete('/users/logout/:userId', (req, res) => {
 })
 
 router.get('/users/:userId/conversations/:converserName', (req, res) => {
+  console.log("here");
   let counter = false
   let theConvo
+  let breakLoop = false
   User.findOne({username: req.params.converserName})
     .then(userTwo => {
       User.findById(req.params.userId)
         .then(userOne => {
+          // if(userOne.conversations.length === 0) {
+          //   const newConversation = new Conversation({
+          //     userTwo: userTwo,
+          //     userOne: userOne
+          //   })
+          //   newConversation.save()
+          //   .then(conversation => {
+          //     userOne.conversations.unshift({conversation: conversation, userConverser: userTwo})
+          //     userOne.save().then(userSavedOne => res.json(userSavedOne.conversations[0]))
+          //     userTwo.conversations.unshift({conversation: conversation, userConverser: userOne})
+          //     userTwo.save()
+          //     breakLoop = true
+          //     return
+          //   })
+          // }
+          if(breakLoop) return
           userOne.conversations.map(convo => {
             if (String(convo.userConverser) === String(userTwo.id)) {
               counter = true
@@ -76,6 +95,7 @@ router.get('/users/:userId/conversations/:converserName', (req, res) => {
              }
           })
           if(counter) {
+            userOne.read = "True"
             return res.json(theConvo)
           } else {
             const newConversation = new Conversation({
@@ -85,10 +105,10 @@ router.get('/users/:userId/conversations/:converserName', (req, res) => {
             newConversation.save()
             .then(conversation => {
               userOne.conversations.unshift({conversation: conversation, userConverser: userTwo})
-              userOne.save()
+              userOne.save().then(userSaved => res.json(userSaved.conversations[0]))
               userTwo.conversations.unshift({conversation: conversation, userConverser: userOne})
-              userTwo.save()
-              return res.json(conversation)
+              userTwo.save().then((user) => user).catch(err => err)
+              return
             })
           }
         })
@@ -96,8 +116,11 @@ router.get('/users/:userId/conversations/:converserName', (req, res) => {
 })
 
 router.post("/users/:userId/conversations/:conversationId/messages", (req, res) => {
+  console.log("in message");
+  console.log(req.params.conversationId);
   Conversation.findById(req.params.conversationId)
     .then(conversation => {
+      console.log(conversation);
       User.findById(req.params.userId)
         .then(user => {
           const newMessage = new Message({
@@ -106,7 +129,7 @@ router.post("/users/:userId/conversations/:conversationId/messages", (req, res) 
           })
           newMessage.save()
             .then(message => {
-              conversation.messages.unshift(message)
+              conversation.messages.push(message)
               conversation.numberOfMessages = String(conversation.messages.length)
               conversation.save().then(response => res.json(response))
             })
@@ -116,7 +139,7 @@ router.post("/users/:userId/conversations/:conversationId/messages", (req, res) 
 
 
 
-router.get('/conversations/:conversationId/messages', (req, res) => {
+router.get('/users/:username/conversations/:conversationId/messages', (req, res) => {
   Conversation.findById(req.params.conversationId)
     .then(conversation => {
       let promises = conversation.messages.map(message => {
@@ -126,5 +149,6 @@ router.get('/conversations/:conversationId/messages', (req, res) => {
       Promise.all(promises).then(result => res.json({messages: result}))
     })
 })
+
 
 module.exports = router

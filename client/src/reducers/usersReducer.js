@@ -3,6 +3,7 @@ import {
   SET_CURRENT_USER,
   CLEAR_ERRORS,
   LOGOUT_USER,
+  LOGIN_USER,
   MAKE_CONVERSATION,
   GET_CONVO_MESSAGES,
   ERROR
@@ -34,11 +35,21 @@ const usersReducer = (state = initialState, action) => {
         ...state,
         currentUser: action.payload
       }
+    case LOGIN_USER:
+      return {
+        ...state,
+        currentUser: action.payload,
+        currentConvo: null,
+        convoMessages: null,
+      }
     case LOGOUT_USER:
       return {
         ...state,
         currentUser: null,
-        users: action.payload
+        users: action.payload,
+        currentConvo: null,
+        convoMessages: null,
+
       }
     case CLEAR_ERRORS:
       return {

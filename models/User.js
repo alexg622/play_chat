@@ -12,6 +12,10 @@ const UserSchema = new Schema({
     required: true,
     minlength: 1
   },
+  read: {
+    type: String,
+    default: "True"
+  },
   loggedIn: {
     type: String,
     default: "True"

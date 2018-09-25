@@ -3,6 +3,9 @@ import { connect } from 'react-redux'
 import { signupUser, clearErrors, getAllUsers } from '../actions/userActions'
 import { closeModal } from '../actions/modalActions'
 import '../styles/form.css'
+import io from 'socket.io-client'
+const socketUrl = "http://192.168.1.2:5000"
+// const socketUrl = "http://10.1.10.62:5000"
 
 class Signup extends Component {
   constructor(){
@@ -17,6 +20,18 @@ class Signup extends Component {
     this.props.clearErrors()
   }
 
+  componentWillMount(){
+    this.initSocket()
+  }
+
+  initSocket(){
+    const socket = io(socketUrl)
+
+    socket.on('connect', () => {
+    })
+    this.setState({socket})
+  }
+
   update(value) {
     return e => this.setState({[value]: e.target.value})
   }
@@ -26,9 +41,14 @@ class Signup extends Component {
     const newUser = { username: this.state.username, password: this.state.password }
     this.props.signupUser(newUser).then(res => {
       if (this.props.error) {
+        setTimeout(() => {
+          this.props.clearErrors()
+        }, 4000)
         return
       } else {
         this.props.getAllUsers()
+        this.state.socket.emit("I_SIGNED_IN", this.state.username)
+
         this.props.closeModal()
       }
     })
