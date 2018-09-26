@@ -72,21 +72,6 @@ router.get('/users/:userId/conversations/:converserName', (req, res) => {
     .then(userTwo => {
       User.findById(req.params.userId)
         .then(userOne => {
-          // if(userOne.conversations.length === 0) {
-          //   const newConversation = new Conversation({
-          //     userTwo: userTwo,
-          //     userOne: userOne
-          //   })
-          //   newConversation.save()
-          //   .then(conversation => {
-          //     userOne.conversations.unshift({conversation: conversation, userConverser: userTwo})
-          //     userOne.save().then(userSavedOne => res.json(userSavedOne.conversations[0]))
-          //     userTwo.conversations.unshift({conversation: conversation, userConverser: userOne})
-          //     userTwo.save()
-          //     breakLoop = true
-          //     return
-          //   })
-          // }
           if(breakLoop) return
           userOne.conversations.map(convo => {
             if (String(convo.userConverser) === String(userTwo.id)) {

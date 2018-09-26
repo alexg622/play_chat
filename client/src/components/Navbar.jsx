@@ -7,6 +7,8 @@ import '../styles/Navbar.css'
 import io from 'socket.io-client'
 
 const socketUrl = "http://192.168.1.2:5000"
+// const socketUrl = "http://192.168.0.192:5000"
+
 // const socketUrl = "http://10.1.10.62:5000"
 
 class Navbar extends Component {

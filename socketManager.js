@@ -12,7 +12,7 @@ module.exports = (socket) => {
   socket.on("I_LOGGED_IN", (username) => {
     io.emit("USER_LOGGED_IN", username)
   })
-  
+
   socket.on("I_SIGNED_IN", (username) => {
     io.emit("USER_SIGNED_IN", username)
   })
